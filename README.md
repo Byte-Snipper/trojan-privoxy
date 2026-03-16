@@ -38,3 +38,23 @@ sed -i '/^socks4/d' /etc/proxychains.conf
 echo "socks5 127.0.0.1 TROJAN_PORT" >> /etc/proxychains.conf
 proxychains curl -4 ip.sb
 ```
+
+## chain proxy B from A
+B为上述方式搭建的代理，C服务器无法直连B，可以通过A进行转发
+```bash
+# 1. 下载 (针对 x86_64 架构，如果是 ARM 请替换文件名)
+curl -L https://github.com/ginuerzh/gost/releases/download/v2.11.5/gost-linux-amd64-2.11.5.gz -o gost.gz
+
+# 2. 解压
+gunzip gost.gz
+
+# 3. 赋予执行权限并移动到系统路径
+chmod +x gost
+mv gost /usr/bin/gost
+
+# 4. 测试
+gost -V
+
+# 在服务器 B 上开启 8080 端口作为入口，并将所有流量通过 A 转发
+gost -L=:21087 -F=http://172.50.2.33:21087
+```
